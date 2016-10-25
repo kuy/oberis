@@ -10,6 +10,9 @@ declare type Piece = {
   rotate?: any
 };
 declare type Stage = number[];
+declare type DirName = 'top' | 'right' | 'bottom' | 'left';
+declare type Dir = -1 | 0 | 1;
+declare type Direction = [Dir, Dir];
 
 export function to1D(dim: Dimension, pos: Position): Position1D {
   const [x, y, z] = pos;
@@ -70,4 +73,41 @@ export function isValid(dim: Dimension, stage: Stage): bool {
 
 export function rand(max: number): number {
   return Math.floor(max * Math.random());
+}
+
+export function dirToVec(dir: DirName): Direction {
+  switch (dir) {
+    case 'up':
+      return [0, -1];
+    case 'right':
+      return [1,  0];
+    case 'down':
+      return [0,  1];
+    case 'left':
+      return [-1, 0];
+  }
+  throw new Error(`Invalid direction: ${dir}`);
+}
+
+export function maxLen<T>(...vectors: Array<T[]>): number {
+  const list = vectors.map(v => v.length);
+  list.sort();
+  return list[list.length - 1];
+}
+
+export function pad<T>(v: T[], len: number, padding: T): T[] {
+  v = [...v];
+  while (v.length < len) {
+    v.push(padding);
+  }
+  return v;
+}
+
+export function add<T>(v1: T[], v2: T[], padding: T): T[] {
+  const l = maxLen(v1, v2);
+  return zip(pad(v1, l, padding), pad(v2, l, padding)).map(([a, b]) => a + b);
+}
+
+export function move(pos: Position, dir: DirName): Position {
+  return add(pos, dirToVec(dir), 0);
 }

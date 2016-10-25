@@ -3,7 +3,7 @@ import {
   SCORE, TIME_TICK,
   PIECE_ADD, PIECE_MOVE, PIECE_ROTATE, PIECE_RASTERIZE,
 } from './actions';
-import { merge, rasterize, empty, isValid } from './utils';
+import { merge, rasterize, empty, isValid, move } from './utils';
 import { DIMENSION } from './constants';
 
 export const initial = {
@@ -48,6 +48,9 @@ const handlers = {
   piece: {
     [PIECE_ADD]: (state, { payload }) => {
       return { ...initial.piece, ...payload };
+    },
+    [PIECE_MOVE]: (state, { payload: dir }) => {
+      return { ...state, position: move(state.position, dir) };
     },
     [PIECE_RASTERIZE]: state => {
       return initial.piece;

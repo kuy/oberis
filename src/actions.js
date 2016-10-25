@@ -10,6 +10,9 @@ export const timeTick = createAction(TIME_TICK);
 export const timeResume = createAction(TIME_RESUME);
 export const timePause = createAction(TIME_PAUSE);
 
+export const INPUT_KEY = 'INPUT_KEY';
+export const inputKey = createAction(INPUT_KEY);
+
 export const PIECE_ADD = 'PIECE_ADD';
 export const PIECE_MOVE = 'PIECE_MOVE';
 export const PIECE_ROTATE = 'PIECE_ROTATE';

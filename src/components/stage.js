@@ -8,14 +8,14 @@ function scale(list) {
   return list.map(n => n * UNIT);
 }
 
-const CUBE_COLOR = new obelisk.CubeColor().getByHorizontalColor(obelisk.ColorPattern.GRAY);
 const color = ([dx, dy, dz]) => {
   const cache = {};
   return ([x, y, z]) => {
     if (typeof cache[z] === 'undefined') {
-      const unit = Math.ceil(127 * (z / dz) + 128);
-      const base = unit * 0x10000 + unit * 0x100 + 255;
-      cache[z] = new obelisk.CubeColor().getByHorizontalColor(base);
+      const unit = z / dz;
+      const base = Math.ceil(127 * (unit ** 0.75) + 128);
+      const hori = base * 0x10000 + base * 0x100 + 255;
+      cache[z] = new obelisk.CubeColor().getByHorizontalColor(hori);
     }
     return cache[z];
   };

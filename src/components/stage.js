@@ -28,6 +28,13 @@ function cube(pos, c) {
   return [box, point];
 }
 
+const BRICK_COLOR = new obelisk.SideColor().getByInnerColor(obelisk.ColorPattern.GRAY);
+function floor([dx, dy, dz]) {
+  const dim = new obelisk.BrickDimension(dx * UNIT, dy * UNIT);
+  const brick = new obelisk.Brick(dim, BRICK_COLOR);
+  return [brick, new obelisk.Point3D(0, 0, 0)];
+}
+
 export default class Stage extends Component {
   componentDidUpdate() {
     this.renderObelisk();
@@ -53,6 +60,9 @@ export default class Stage extends Component {
     if (!this.color) {
       this.color = color(size);
     }
+
+    // Draw floor
+    this.view.renderObject(...floor(size));
 
     // Rasterize piece and merge to stage
     let stage;

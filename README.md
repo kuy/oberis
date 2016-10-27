@@ -2,6 +2,8 @@
 
 Tetris + [Obelisk.js](https://github.com/nosir/obelisk.js) with Redux.
 
+![Oberis Preview][oberis_img]
+
 ## Usage
 
 ```
@@ -32,3 +34,5 @@ MIT
 ## Author
 
 Yuki Kodama / [@kuy](https://twitter.com/kuy)
+
+[oberis_img]: https://github.com/kuy/oberis/blob/master/public/oberis.gif?raw=true

@@ -8,10 +8,22 @@ function scale(list) {
   return list.map(n => n * UNIT);
 }
 
-const CUBE_DIM = new obelisk.CubeDimension(UNIT, UNIT, UNIT);
 const CUBE_COLOR = new obelisk.CubeColor().getByHorizontalColor(obelisk.ColorPattern.GRAY);
-function cube(pos) {
-  const box = new obelisk.Cube(CUBE_DIM, CUBE_COLOR, true);
+const color = ([dx, dy, dz]) => {
+  const cache = {};
+  return ([x, y, z]) => {
+    if (typeof cache[z] === 'undefined') {
+      const unit = Math.ceil(127 * (z / dz) + 128);
+      const base = unit * 0x10000 + unit * 0x100 + 255;
+      cache[z] = new obelisk.CubeColor().getByHorizontalColor(base);
+    }
+    return cache[z];
+  };
+};
+
+const CUBE_DIM = new obelisk.CubeDimension(UNIT, UNIT, UNIT);
+function cube(pos, c) {
+  const box = new obelisk.Cube(CUBE_DIM, c, true);
   const point = new obelisk.Point3D(...scale(pos));
   return [box, point];
 }
@@ -37,9 +49,14 @@ export default class Stage extends Component {
       this.view.clear();
     }
 
+    const { size } = this.props;
+    if (!this.color) {
+      this.color = color(size);
+    }
+
     // Rasterize piece and merge to stage
     let stage;
-    const { data, size, piece } = this.props;
+    const { data, piece } = this.props;
     if (typeof piece.type === 'undefined') {
       stage = data;
     } else {
@@ -52,7 +69,8 @@ export default class Stage extends Component {
     const translate = to3D.withDim(size);
     for (let i = 0; i < len; i++) {
       if (stage[i] === 1) {
-        this.view.renderObject(...cube(translate(i)));
+        const pos = translate(i);
+        this.view.renderObject(...cube(pos, this.color(pos)));
       }
     }
   }

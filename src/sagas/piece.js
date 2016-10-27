@@ -1,50 +1,43 @@
 import { takeEvery } from 'redux-saga';
 import { fork, take, put, select } from 'redux-saga/effects';
 import { INPUT_KEY, TIME_TICK, PIECE_RASTERIZE, pieceAdd, pieceRasterize, pieceMove } from '../actions';
-import { rand, move } from '../utils';
+import { rand, canMove } from '../utils';
 
 function* moveDownByGravity() {
   while (true) {
     yield take(TIME_TICK);
-    const { type, position, rotate } = yield select(state => state.piece);
-    if (typeof type !== 'undefined') {
-      const [x, y, z] = position;
-      if (z <= 0) {
-        yield put(pieceRasterize({ type, position, rotate }));
+    const [{ data, size }, piece] = yield select(state => [state.stage, state.piece]);
+    if (typeof piece.type !== 'undefined') {
+      if (!canMove(size, data, piece, 'down')) {
+        yield put(pieceRasterize(piece));
       }
     }
   }
 }
 
-function canMove(dim, pos, dir) {
-  const newPos = move(pos, dir);
-  return 0 <= newPos[0] && 0 <= newPos[1] && 0 <= newPos[2] &&
-    newPos[0] < dim[0] && newPos[1] < dim[1] && newPos[2] < dim[2];
-}
-
 function* moveByPlayer() {
   while (true) {
     const { payload: key } = yield take(INPUT_KEY);
-    const [size, position] = yield select(state => [state.stage.size, state.piece.position]);
+    const [{ data, size }, piece] = yield select(state => [state.stage, state.piece]);
     let action;
     switch (key) {
       case 'ArrowUp':
-        if (canMove(size, position, 'back')) {
+        if (canMove(size, data, piece, 'back')) {
           yield put(pieceMove('back'));
         }
         break;
       case 'ArrowRight':
-        if (canMove(size, position, 'right')) {
+        if (canMove(size, data, piece, 'right')) {
           yield put(pieceMove('right'));
         }
         break;
       case 'ArrowDown':
-        if (canMove(size, position, 'front')) {
+        if (canMove(size, data, piece, 'front')) {
           yield put(pieceMove('front'));
         }
         break;
       case 'ArrowLeft':
-        if (canMove(size, position, 'left')) {
+        if (canMove(size, data, piece, 'left')) {
           yield put(pieceMove('left'));
         }
         break;

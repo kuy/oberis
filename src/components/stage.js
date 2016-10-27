@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import obelisk from 'obelisk.js';
 import { WIDTH, HEIGHT } from '../constants';
-import { to3D } from '../utils';
+import { to3D, rasterize, merge } from '../utils';
 
 const UNIT = 16;
 function scale(list) {
@@ -37,21 +37,23 @@ export default class Stage extends Component {
       this.view.clear();
     }
 
+    // Rasterize piece and merge to stage
+    let stage;
+    const { data, size, piece } = this.props;
+    if (typeof piece.type === 'undefined') {
+      stage = data;
+    } else {
+      const volume = rasterize(size, piece);
+      stage = merge(data, volume);
+    }
+
     // Draw stage
-    const { data, size } = this.props;
     const len = size[0] * size[1] * size[2];
     const translate = to3D.withDim(size);
     for (let i = 0; i < len; i++) {
-      if (data[i] === 1) {
+      if (stage[i] === 1) {
         this.view.renderObject(...cube(translate(i)));
       }
-    }
-
-    // Draw piece
-    const { piece } = this.props;
-
-    if (typeof piece.type !== 'undefined') {
-      this.view.renderObject(...cube(piece.position));
     }
   }
 }

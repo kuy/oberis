@@ -62,17 +62,26 @@ export function zip<T, S>(a1: T[], a2: S[]): [[T, S]] {
 }
 
 export function merge(s1: Stage, s2: Stage): Stage {
-  const pairs = zip(s1, s2);
-  return pairs.map(([a, b]) => 0 < a || 0 < b ? 1 : 0);
+  return zip(s1, s2).map(([a, b]) => 0 < a || 0 < b ? 1 : 0);
+}
+
+export function hasIntersection(s1: Stage, s2: Stage): bool {
+  return 0 < zip(s1, s2).filter(([a, b]) => a === 1 && b === 1).length;
+}
+
+export function add(v1: number[], v2: number[]): number[] {
+  return zip(v1, v2).map(([a, b]) => a + b);
+}
+
+export function isInStage(dim: Dimension, pos: Position): bool {
+  const [dx, dy, dz] = dim;
+  const [x, y, z] = pos;
+  return 0 <= x && x < dx && 0 <= y && y < dy && 0 <= z && z < dz;
 }
 
 export function isValid(dim: Dimension, stage: Stage): bool {
   const [dx, dy, dz] = dim;
   return dx * dy * dz === stage.length;
-}
-
-export function rand(max: number): number {
-  return Math.floor(max * Math.random());
 }
 
 export function dirToVec(dir: DirName): Direction {
@@ -93,21 +102,17 @@ export function dirToVec(dir: DirName): Direction {
   throw new Error(`Invalid direction: ${dir}`);
 }
 
-export function pad<T>(v: T[], len: number, padding: T): T[] {
-  v = [...v];
-  while (v.length < len) {
-    v.push(padding);
+export function move(piece: Piece, dir: DirName): Piece {
+  return { ...piece, position: add(piece.position, dirToVec(dir)) };
+}
+
+export function canMove(dim: Dimension, stage: Stage, piece: Piece, dir: DirName): bool {
+  const newPiece = move(piece, dir);
+  if (!isInStage(dim, newPiece.position)) {
+    return false;
   }
-  return v;
-}
-
-export function add<T>(v1: T[], v2: T[], padding: T): T[] {
-  const l = Math.max(v1.length, v2.length);
-  return zip(pad(v1, l, padding), pad(v2, l, padding)).map(([a, b]) => a + b);
-}
-
-export function move(pos: Position, dir: DirName): Position {
-  return add(pos, dirToVec(dir), 0);
+  const volume = rasterize(dim, newPiece);
+  return !hasIntersection(stage, volume);
 }
 
 export function range(n) {
@@ -131,13 +136,6 @@ export function eachCubes(dim: Dimension, volume: Stage): Position[] {
     .filter(([i, d]) => d === 1).map(([i, d]) => convert(i));
 }
 
-export function isExist(dim: Dimension, stage: Stage, pos: Position, dir: DirName): bool {
-  
-}
-
-export function isGrounded(dim: Dimension, stage: Stage, piece: Piece): bool {
-  const volume = rasterize(dim, piece);
-  for (let pos of eachCubes(dim, volume)) {
-    
-  }
+export function rand(max: number): number {
+  return Math.floor(max * Math.random());
 }

@@ -50,7 +50,7 @@ const handlers = {
       return { ...initial.piece, ...payload };
     },
     [PIECE_MOVE]: (state, { payload: dir }) => {
-      return { ...state, position: move(state.position, dir) };
+      return move(state, dir);
     },
     [PIECE_RASTERIZE]: state => {
       return initial.piece;

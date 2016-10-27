@@ -76,19 +76,6 @@ describe('utils', () => {
     });
   });
 
-  describe('isGrounded', () => {
-    it('should return whether the piece connects to the stage blocks or not', () => {
-      assert( isGrounded([2, 2, 2], [1, 1, 1, 1, 0, 0, 0, 0], { type: 1, position: [0, 0, 1] }));
-      assert(!isGrounded([2, 2, 2], [0, 1, 1, 1, 0, 0, 0, 0], { type: 1, position: [0, 0, 1] }));
-      assert(!isGrounded([2, 2, 2], [1, 0, 0, 0, 1, 0, 0, 0], { type: 1, position: [1, 0, 1] }));
-      assert( isGrounded([2, 2, 2], [0, 0, 0, 1, 0, 0, 0, 0], { type: 1, position: [1, 1, 1] }));
-      assert( isGrounded([2, 3, 2], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0], { type: 1, position: [1, 1, 1] }));
-      assert( isGrounded([3, 3, 3], [1, 0, 0, 0, 0, 0, 0, 0, 0,
-                                     1, 0, 0, 0, 0, 0, 0, 0, 0,
-                                     0, 0, 0, 0, 0, 0, 0, 0, 0], { type: 1, position: [0, 0, 2] }));
-    });
-  });
-
   describe('range', () => {
     it('should generate a list of 0 to the given number', () => {
       assert.deepStrictEqual(range(1), [0]);
@@ -112,16 +99,6 @@ describe('utils', () => {
       assert.deepStrictEqual(eachCubes([3, 3, 3], [0, 0, 0, 0, 0, 0, 0, 0, 0,
                                                    0, 0, 0, 0, 0, 1, 0, 0, 0,
                                                    0, 0, 1, 0, 0, 1, 0, 0, 1]), [[2, 1, 1], [2, 0, 2], [2, 1, 2], [2, 2, 2]]);
-    });
-  });
-
-  describe('isExist', () => {
-    it('should return whether cube exists in given direaction', () => {
-      assert( isExist([2, 2, 2], [1, 0, 0, 1, 0, 0, 0, 0], [0, 0, 1], 'bottom'));
-      assert(!isExist([2, 2, 2], [1, 0, 0, 1, 0, 0, 0, 0], [1, 0, 1], 'bottom'));
-      assert( isExist([2, 2, 2], [1, 0, 0, 1, 0, 0, 0, 0], [1, 1, 1], 'bottom'));
-      assert( isExist([2, 2, 2], [1, 0, 0, 1, 0, 0, 0, 0], [0, 1, 0], 'right'));
-      assert( isExist([2, 2, 2], [1, 0, 0, 1, 0, 0, 0, 0], [0, 1, 0], 'back'));
     });
   });
 });

@@ -1,5 +1,5 @@
 const assert = require('assert');
-import { zip, merge, rasterize, to1D, to3D, isValid } from '../../src/utils';
+import { zip, merge, rasterize, to1D, to3D, isValid, isGrounded, range, eachZ, eachCubes, isExist } from '../../src/utils';
 
 describe('utils', () => {
   describe('zip', () => {
@@ -73,6 +73,55 @@ describe('utils', () => {
       assert(isValid([3, 3, 3], [0, 0, 0, 0, 0, 0, 0, 0, 0,
                                  0, 0, 0, 0, 0, 0, 0, 0, 0,
                                  0, 0, 0, 0, 0, 0, 0, 0, 0]));
+    });
+  });
+
+  describe('isGrounded', () => {
+    it('should return whether the piece connects to the stage blocks or not', () => {
+      assert( isGrounded([2, 2, 2], [1, 1, 1, 1, 0, 0, 0, 0], { type: 1, position: [0, 0, 1] }));
+      assert(!isGrounded([2, 2, 2], [0, 1, 1, 1, 0, 0, 0, 0], { type: 1, position: [0, 0, 1] }));
+      assert(!isGrounded([2, 2, 2], [1, 0, 0, 0, 1, 0, 0, 0], { type: 1, position: [1, 0, 1] }));
+      assert( isGrounded([2, 2, 2], [0, 0, 0, 1, 0, 0, 0, 0], { type: 1, position: [1, 1, 1] }));
+      assert( isGrounded([2, 3, 2], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0], { type: 1, position: [1, 1, 1] }));
+      assert( isGrounded([3, 3, 3], [1, 0, 0, 0, 0, 0, 0, 0, 0,
+                                     1, 0, 0, 0, 0, 0, 0, 0, 0,
+                                     0, 0, 0, 0, 0, 0, 0, 0, 0], { type: 1, position: [0, 0, 2] }));
+    });
+  });
+
+  describe('range', () => {
+    it('should generate a list of 0 to the given number', () => {
+      assert.deepStrictEqual(range(1), [0]);
+      assert.deepStrictEqual(range(5), [0, 1, 2, 3, 4]);
+      assert.deepStrictEqual(range(10), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    });
+  });
+
+  describe('eachZ', () => {
+    it('should iterate vertical layers', () => {
+      assert.deepStrictEqual(eachZ([2, 2, 2], [0, 1, 0, 1, 1, 1, 0, 0]), [[0, 1, 0, 1], [1, 1, 0, 0]]);
+      assert.deepStrictEqual(eachZ([2, 4, 2], [0, 1, 0, 1, 1, 1, 0, 0,
+                                               1, 0, 1, 0, 0, 0, 1, 1]), [[0, 1, 0, 1, 1, 1, 0, 0],
+                                                                          [1, 0, 1, 0, 0, 0, 1, 1]]);
+    });
+  });
+
+  describe('eachCubes', () => {
+    it('should iterate cubes from rasterized piece', () => {
+      assert.deepStrictEqual(eachCubes([2, 2, 2], [0, 1, 0, 0, 1, 1, 0, 1]), [[1, 0, 0], [0, 0, 1], [1, 0, 1], [1, 1, 1]]);
+      assert.deepStrictEqual(eachCubes([3, 3, 3], [0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                                   0, 0, 0, 0, 0, 1, 0, 0, 0,
+                                                   0, 0, 1, 0, 0, 1, 0, 0, 1]), [[2, 1, 1], [2, 0, 2], [2, 1, 2], [2, 2, 2]]);
+    });
+  });
+
+  describe('isExist', () => {
+    it('should return whether cube exists in given direaction', () => {
+      assert( isExist([2, 2, 2], [1, 0, 0, 1, 0, 0, 0, 0], [0, 0, 1], 'bottom'));
+      assert(!isExist([2, 2, 2], [1, 0, 0, 1, 0, 0, 0, 0], [1, 0, 1], 'bottom'));
+      assert( isExist([2, 2, 2], [1, 0, 0, 1, 0, 0, 0, 0], [1, 1, 1], 'bottom'));
+      assert( isExist([2, 2, 2], [1, 0, 0, 1, 0, 0, 0, 0], [0, 1, 0], 'right'));
+      assert( isExist([2, 2, 2], [1, 0, 0, 1, 0, 0, 0, 0], [0, 1, 0], 'back'));
     });
   });
 });

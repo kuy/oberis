@@ -10,9 +10,9 @@ declare type Piece = {
   rotate?: any
 };
 declare type Stage = number[];
-declare type DirName = 'top' | 'right' | 'bottom' | 'left';
+declare type DirName = 'back' | 'right' | 'front' | 'left' | 'up' | 'down';
 declare type Dir = -1 | 0 | 1;
-declare type Direction = [Dir, Dir];
+declare type Direction = [Dir, Dir, Dir];
 
 export function to1D(dim: Dimension, pos: Position): Position1D {
   const [x, y, z] = pos;
@@ -77,22 +77,20 @@ export function rand(max: number): number {
 
 export function dirToVec(dir: DirName): Direction {
   switch (dir) {
-    case 'up':
-      return [0, -1];
+    case 'back':
+      return [ 0, -1,  0];
     case 'right':
-      return [1,  0];
-    case 'down':
-      return [0,  1];
+      return [ 1,  0,  0];
+    case 'front':
+      return [ 0,  1,  0];
     case 'left':
-      return [-1, 0];
+      return [-1,  0,  0];
+    case 'up':
+      return [ 0,  0,  1];
+    case 'down':
+      return [ 0,  0, -1];
   }
   throw new Error(`Invalid direction: ${dir}`);
-}
-
-export function maxLen<T>(...vectors: Array<T[]>): number {
-  const list = vectors.map(v => v.length);
-  list.sort();
-  return list[list.length - 1];
 }
 
 export function pad<T>(v: T[], len: number, padding: T): T[] {
@@ -104,10 +102,42 @@ export function pad<T>(v: T[], len: number, padding: T): T[] {
 }
 
 export function add<T>(v1: T[], v2: T[], padding: T): T[] {
-  const l = maxLen(v1, v2);
+  const l = Math.max(v1.length, v2.length);
   return zip(pad(v1, l, padding), pad(v2, l, padding)).map(([a, b]) => a + b);
 }
 
 export function move(pos: Position, dir: DirName): Position {
   return add(pos, dirToVec(dir), 0);
+}
+
+export function range(n) {
+  const list = [];
+  for (let i = 0; i < n; i++) {
+    list.push(i);
+  }
+  return list;
+}
+
+export function eachZ(dim: Dimension, stage: Stage) {
+  const [dx, dy, dz] = dim;
+  const u = dx * dy;
+  return range(dz).map(i => stage.slice(i * u, (i + 1) * u));
+}
+
+// volume: Rasterized piece
+export function eachCubes(dim: Dimension, volume: Stage): Position[] {
+  const convert = to3D.withDim(dim);
+  return volume.map((d, i) => [i, d])
+    .filter(([i, d]) => d === 1).map(([i, d]) => convert(i));
+}
+
+export function isExist(dim: Dimension, stage: Stage, pos: Position, dir: DirName): bool {
+  
+}
+
+export function isGrounded(dim: Dimension, stage: Stage, piece: Piece): bool {
+  const volume = rasterize(dim, piece);
+  for (let pos of eachCubes(dim, volume)) {
+    
+  }
 }

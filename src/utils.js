@@ -43,11 +43,7 @@ to3D.withDim = function createTo3DWithDim(dim: Dimension) {
 export function empty(dim: Dimension): Stage {
   const [dx, dy, dz] = dim;
   const size = dx * dy * dz;
-  const stage = [];
-  for (let i = 0; i < size; i++) {
-    stage.push(0);
-  }
-  return stage;
+  return range(size).map(i => 0);
 }
 
 export function rasterize(dim: Dimension, { type, position }: Piece): Stage {
@@ -115,7 +111,7 @@ export function canMove(dim: Dimension, stage: Stage, piece: Piece, dir: DirName
   return !hasIntersection(stage, volume);
 }
 
-export function range(n) {
+export function range(n: number): number[] {
   const list = [];
   for (let i = 0; i < n; i++) {
     list.push(i);

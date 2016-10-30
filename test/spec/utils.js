@@ -1,5 +1,5 @@
 const assert = require('assert');
-import { zip, merge, rasterize, to1D, to3D, isValid, isGrounded, range, eachZ, eachCubes, isExist } from '../../src/utils';
+import { zip, merge, rasterize, to1D, to3D, isValid, isGrounded, range, eachZ, eachCubes, isExist, empty } from '../../src/utils';
 
 describe('utils', () => {
   describe('zip', () => {
@@ -99,6 +99,17 @@ describe('utils', () => {
       assert.deepStrictEqual(eachCubes([3, 3, 3], [0, 0, 0, 0, 0, 0, 0, 0, 0,
                                                    0, 0, 0, 0, 0, 1, 0, 0, 0,
                                                    0, 0, 1, 0, 0, 1, 0, 0, 1]), [[2, 1, 1], [2, 0, 2], [2, 1, 2], [2, 2, 2]]);
+    });
+  });
+
+  describe('empty', () => {
+    it('should generate a zero-padding list based on given dimension', () => {
+      assert.deepStrictEqual(empty([2, 2, 2]), [0, 0, 0, 0, 0, 0, 0, 0]);
+      assert.deepStrictEqual(empty([1, 2, 3]), [0, 0, 0, 0, 0, 0]);
+      assert.deepStrictEqual(empty([3, 2, 1]), [0, 0, 0, 0, 0, 0]);
+      assert.deepStrictEqual(empty([3, 3, 3]), [0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                                0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                                0, 0, 0, 0, 0, 0, 0, 0, 0]);
     });
   });
 });

@@ -1,5 +1,5 @@
 const assert = require('assert');
-import { zip, merge, rasterize, to1D, to3D, isValid, isGrounded, range, eachZ, eachCubes, isExist, empty } from '../../src/utils';
+import { zip, merge, rasterize, to1D, to3D, isValid, isGrounded, range, eachZ, eachCubes, isExist, empty, sliceX, sliceY, sliceZ, shrink } from '../../src/utils';
 
 describe('utils', () => {
   describe('zip', () => {
@@ -16,9 +16,14 @@ describe('utils', () => {
 
   describe('rasterize', () => {
     it('should fill with piece', () => {
-      const dim = [2, 2, 2];
-      const piece = { type: 1, position: [1, 1, 0] };
-      assert.deepStrictEqual(rasterize(dim, piece), [0, 0, 0, 1, 0, 0, 0, 0]);
+      assert.deepStrictEqual(rasterize([1, 1, 1], { type: 1, position: [0, 0, 0] }), [1]);
+      assert.deepStrictEqual(rasterize([1, 1, 1], { type: 1, position: [1, 0, 0] }), [0]);
+      assert.deepStrictEqual(rasterize([1, 1, 1], { type: 1, position: [0, 1, 0] }), [0]);
+      assert.deepStrictEqual(rasterize([1, 1, 1], { type: 1, position: [0, 0, 1] }), [0]);
+
+      // assert.deepStrictEqual(rasterize([2, 2, 2], { type: 1, position: [1, 1, 0] }), [0, 0, 0, 1, 0, 0, 0, 0]);
+      // assert.deepStrictEqual(rasterize([3, 3, 3], { type: 1, position: [1, 1, 0] }), [0, 0, 0, 1, 0, 0, 0, 0]);
+      // assert.deepStrictEqual(rasterize([4, 4, 4], { type: 1, position: [1, 1, 0] }), [0, 0, 0, 1, 0, 0, 0, 0]);
     });
   });
 
@@ -78,6 +83,7 @@ describe('utils', () => {
 
   describe('range', () => {
     it('should generate a list of 0 to the given number', () => {
+      assert.deepStrictEqual(range(0), []);
       assert.deepStrictEqual(range(1), [0]);
       assert.deepStrictEqual(range(5), [0, 1, 2, 3, 4]);
       assert.deepStrictEqual(range(10), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
@@ -86,6 +92,8 @@ describe('utils', () => {
 
   describe('eachZ', () => {
     it('should iterate vertical layers', () => {
+      assert.deepStrictEqual(eachZ([1, 1, 1], [0]), [[0]]);
+      assert.deepStrictEqual(eachZ([1, 1, 1], [1]), [[1]]);
       assert.deepStrictEqual(eachZ([2, 2, 2], [0, 1, 0, 1, 1, 1, 0, 0]), [[0, 1, 0, 1], [1, 1, 0, 0]]);
       assert.deepStrictEqual(eachZ([2, 4, 2], [0, 1, 0, 1, 1, 1, 0, 0,
                                                1, 0, 1, 0, 0, 0, 1, 1]), [[0, 1, 0, 1, 1, 1, 0, 0],
@@ -95,6 +103,10 @@ describe('utils', () => {
 
   describe('eachCubes', () => {
     it('should iterate cubes from rasterized piece', () => {
+      assert.deepStrictEqual(eachCubes([0, 1, 1], []), []);
+      assert.deepStrictEqual(eachCubes([0, 1, 1], []), []);
+      assert.deepStrictEqual(eachCubes([1, 1, 1], [0]), []);
+      assert.deepStrictEqual(eachCubes([1, 1, 1], [1]), [[0, 0, 0]]);
       assert.deepStrictEqual(eachCubes([2, 2, 2], [0, 1, 0, 0, 1, 1, 0, 1]), [[1, 0, 0], [0, 0, 1], [1, 0, 1], [1, 1, 1]]);
       assert.deepStrictEqual(eachCubes([3, 3, 3], [0, 0, 0, 0, 0, 0, 0, 0, 0,
                                                    0, 0, 0, 0, 0, 1, 0, 0, 0,
@@ -104,12 +116,73 @@ describe('utils', () => {
 
   describe('empty', () => {
     it('should generate a zero-padding list based on given dimension', () => {
+      assert.deepStrictEqual(empty([0, 0, 0]), []);
+      assert.deepStrictEqual(empty([1, 1, 1]), [0]);
       assert.deepStrictEqual(empty([2, 2, 2]), [0, 0, 0, 0, 0, 0, 0, 0]);
       assert.deepStrictEqual(empty([1, 2, 3]), [0, 0, 0, 0, 0, 0]);
       assert.deepStrictEqual(empty([3, 2, 1]), [0, 0, 0, 0, 0, 0]);
       assert.deepStrictEqual(empty([3, 3, 3]), [0, 0, 0, 0, 0, 0, 0, 0, 0,
                                                 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                                 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+    });
+  });
+
+  describe('sliceX', () => {
+    it('should cut out a new volume from given volume based on x-axis range', () => {
+      assert.deepStrictEqual(sliceX([2, 2, 1], [1, 0, 1, 0], [0, 1]), [1, 1]);
+      assert.deepStrictEqual(sliceX([2, 2, 1], [1, 0, 1, 0], [1, 2]), [0, 0]);
+      assert.deepStrictEqual(sliceX([2, 2, 2], [1, 0, 1, 0, 1, 0, 1, 0], [0, 1]), [1, 1, 1, 1]);
+      assert.deepStrictEqual(sliceX([2, 2, 2], [1, 0, 1, 0, 1, 0, 1, 0], [1, 2]), [0, 0, 0, 0]);
+      assert.deepStrictEqual(sliceX([2, 2, 2], [1, 0, 1, 0, 1, 0, 1, 0], [0, 2]), [1, 0, 1, 0, 1, 0, 1, 0]);
+      assert.deepStrictEqual(sliceX([4, 2, 1], [0, 1, 1, 0, 0, 1, 1, 0], [1, 3]), [1, 1, 1, 1]);
+      assert.deepStrictEqual(sliceX([4, 2, 1], [0, 1, 1, 0, 0, 1, 1, 0], [2, 4]), [1, 0, 1, 0]);
+      assert.deepStrictEqual(sliceX([3, 3, 3], [0, 0, 1, 0, 0, 0, 0, 0, 1,
+                                                0, 0, 0, 0, 0, 1, 0, 0, 0,
+                                                0, 0, 1, 0, 0, 0, 0, 0, 1], [2, 3]), [1, 0, 1, 0, 1, 0, 1, 0, 1]);
+    });
+  });
+
+  describe('sliceY', () => {
+    it('should cut out a new volume from given volume based on y-axis range', () => {
+      assert.deepStrictEqual(sliceY([2, 2, 1], [1, 1, 0, 0], [0, 1]), [1, 1]);
+      assert.deepStrictEqual(sliceY([2, 2, 1], [1, 1, 0, 0], [1, 2]), [0, 0]);
+      assert.deepStrictEqual(sliceY([2, 2, 2], [1, 1, 0, 0, 1, 1, 0, 0], [0, 1]), [1, 1, 1, 1]);
+      assert.deepStrictEqual(sliceY([2, 2, 2], [1, 1, 0, 0, 1, 1, 0, 0], [1, 2]), [0, 0, 0, 0]);
+      assert.deepStrictEqual(sliceY([2, 2, 2], [1, 1, 0, 0, 1, 1, 0, 0], [0, 2]), [1, 1, 0, 0, 1, 1, 0, 0]);
+      assert.deepStrictEqual(sliceY([2, 4, 1], [0, 0, 1, 1, 1, 1, 0, 0], [1, 3]), [1, 1, 1, 1]);
+      assert.deepStrictEqual(sliceY([2, 4, 1], [0, 0, 1, 1, 1, 1, 0, 0], [2, 4]), [1, 1, 0, 0]);
+      assert.deepStrictEqual(sliceY([3, 3, 3], [0, 0, 0, 0, 0, 0, 1, 1, 1,
+                                                0, 0, 0, 0, 1, 0, 1, 0, 1,
+                                                0, 0, 0, 0, 0, 0, 1, 1, 1], [2, 3]), [1, 1, 1, 1, 0, 1, 1, 1, 1]);
+    });
+  });
+
+  describe('sliceZ', () => {
+    it('should cut out a new volume from given volume based on z-axis range', () => {
+      assert.deepStrictEqual(sliceZ([2, 2, 2], [1, 1, 1, 1, 0, 0, 0, 0], [0, 1]), [1, 1, 1, 1]);
+      assert.deepStrictEqual(sliceZ([2, 2, 2], [1, 1, 1, 1, 0, 0, 0, 0], [1, 2]), [0, 0, 0, 0]);
+      assert.deepStrictEqual(sliceZ([2, 2, 2], [1, 1, 1, 1, 0, 0, 0, 0], [0, 2]), [1, 1, 1, 1, 0, 0, 0, 0]);
+      assert.deepStrictEqual(sliceZ([1, 2, 4], [0, 0, 1, 1, 1, 1, 0, 0], [1, 3]), [1, 1, 1, 1]);
+      assert.deepStrictEqual(sliceZ([1, 2, 4], [0, 0, 1, 1, 1, 1, 0, 0], [2, 4]), [1, 1, 0, 0]);
+      assert.deepStrictEqual(sliceZ([3, 3, 3], [0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                                0, 0, 0, 0, 1, 0, 0, 0, 0,
+                                                1, 0, 0, 0, 1, 0, 0, 0, 1], [2, 3]), [1, 0, 0, 0, 1, 0, 0, 0, 1]);
+    });
+  });
+
+  describe('shrink', () => {
+    it('should return a shrinked volume', () => {
+      assert.deepStrictEqual(shrink([1, 1, 1], [0]), [0, 0, 0]);
+      assert.deepStrictEqual(shrink([1, 1, 1], [1]), [1, 1, 1]);
+
+      assert.deepStrictEqual(shrink([4, 2, 1], [0, 0, 0, 0, 0, 0, 0, 0]), [0, 0, 0]);
+      assert.deepStrictEqual(shrink([4, 2, 1], [1, 0, 0, 0, 0, 0, 0, 0]), [1, 1, 1]);
+      assert.deepStrictEqual(shrink([4, 2, 1], [1, 1, 0, 0, 0, 0, 0, 0]), [2, 1, 1]);
+      assert.deepStrictEqual(shrink([4, 2, 1], [1, 1, 1, 0, 1, 0, 0, 0]), [3, 2, 1]);
+      assert.deepStrictEqual(shrink([3, 3, 2], [0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                                1, 1, 1, 0, 0, 1, 0, 0, 0]), [3, 2, 1]);
+      assert.deepStrictEqual(shrink([3, 3, 3], [0, 0, 0, 0, 0, 1, 0, 1, 1,
+                                                0, 0, 0, 0, 0, 0, 0, 0, 1]), [2, 2, 2]);
     });
   });
 });

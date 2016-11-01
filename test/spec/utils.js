@@ -1,5 +1,5 @@
 const assert = require('assert');
-import { zip, merge, rasterize, to1D, to3D, isValid, isGrounded, range, eachZ, eachCubes, isExist, empty, sliceX, sliceY, sliceZ, shrink } from '../../src/utils';
+import { zip, merge, rasterize, to1D, to3D, isValid, isGrounded, range, eachCubes, isExist, empty, sliceX, sliceY, sliceZ, shrink } from '../../src/utils';
 
 describe('utils', () => {
   describe('zip', () => {
@@ -87,17 +87,6 @@ describe('utils', () => {
       assert.deepStrictEqual(range(1), [0]);
       assert.deepStrictEqual(range(5), [0, 1, 2, 3, 4]);
       assert.deepStrictEqual(range(10), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
-    });
-  });
-
-  describe('eachZ', () => {
-    it('should iterate vertical layers', () => {
-      assert.deepStrictEqual(eachZ([1, 1, 1], [0]), [[0]]);
-      assert.deepStrictEqual(eachZ([1, 1, 1], [1]), [[1]]);
-      assert.deepStrictEqual(eachZ([2, 2, 2], [0, 1, 0, 1, 1, 1, 0, 0]), [[0, 1, 0, 1], [1, 1, 0, 0]]);
-      assert.deepStrictEqual(eachZ([2, 4, 2], [0, 1, 0, 1, 1, 1, 0, 0,
-                                               1, 0, 1, 0, 0, 0, 1, 1]), [[0, 1, 0, 1, 1, 1, 0, 0],
-                                                                          [1, 0, 1, 0, 0, 0, 1, 1]]);
     });
   });
 

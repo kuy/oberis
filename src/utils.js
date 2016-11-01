@@ -145,11 +145,6 @@ export function range(n: number): number[] {
   return list;
 }
 
-export function eachZ([dx, dy, dz]: Dimension, stage: Stage) {
-  const u = dx * dy;
-  return range(dz).map(i => stage.slice(i * u, (i + 1) * u));
-}
-
 // volume: Rasterized piece
 export function eachCubes(dim: Dimension, volume: Stage): Position[] {
   if (dim[0] === 0 || dim[1] === 0 || dim[2] === 0) {

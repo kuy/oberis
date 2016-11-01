@@ -4,8 +4,9 @@ declare type Triple = [number, number, number];
 declare type Dimension = Triple;
 declare type Position = Triple;
 declare type Position1D = number;
+declare type PieceType = number;
 declare type Piece = {
-  type: number,
+  type: PieceType,
   position: Position,
   rotate?: any
 };
@@ -55,13 +56,23 @@ const PIECES = {
   '5': [[0, 0, 0], [1, 0, 0], [2, 0, 0], [1, 1, 0]],
 };
 
+export function numCubesByType(type: PieceType) {
+  const cubes = PIECES[type.toString()];
+  if (typeof cubes === 'undefined') {
+    throw new Error(`Unknown piece type: ${type}`);
+  }
+
+  return cubes.length;
+}
+
 export function rasterize(dim: Dimension, { type, position: base }: Piece): Stage {
   const cubes = PIECES[type.toString()];
   if (typeof cubes === 'undefined') {
     throw new Error(`Unknown piece type: ${type}`);
   }
 
-  const to = to1D.withDim(dim), inStage = isInStage.withDim(dim);
+  const to = to1D.withDim(dim);
+  const inStage = isInStage.withDim(dim);
   let stage = empty(dim);
   for (let cube of cubes) {
     const pos = add(base, cube);
@@ -129,12 +140,10 @@ export function move(piece: Piece, dir: DirName): Piece {
 }
 
 export function canMove(dim: Dimension, stage: Stage, piece: Piece, dir: DirName): bool {
+  const num = numCubesByType(piece.type);
   const newPiece = move(piece, dir);
-  if (!isInStage(dim, newPiece.position)) {
-    return false;
-  }
   const volume = rasterize(dim, newPiece);
-  return !hasIntersection(stage, volume);
+  return numCubes(dim, volume) === num && !hasIntersection(stage, volume);
 }
 
 export function range(n: number): number[] {

@@ -21,6 +21,11 @@ describe('utils', () => {
       assert.deepStrictEqual(rasterize([1, 1, 1], { type: 1, position: [0, 1, 0] }), [0]);
       assert.deepStrictEqual(rasterize([1, 1, 1], { type: 1, position: [0, 0, 1] }), [0]);
 
+      assert.deepStrictEqual(rasterize([4, 2, 1], { type: 2, position: [0, 0, 0] }), [1, 1, 1, 1,
+                                                                                      0, 0, 0, 0]);
+      assert.deepStrictEqual(rasterize([4, 2, 1], { type: 2, position: [1, 0, 0] }), [0, 1, 1, 1,
+                                                                                      0, 0, 0, 0]);
+
       // assert.deepStrictEqual(rasterize([2, 2, 2], { type: 1, position: [1, 1, 0] }), [0, 0, 0, 1, 0, 0, 0, 0]);
       // assert.deepStrictEqual(rasterize([3, 3, 3], { type: 1, position: [1, 1, 0] }), [0, 0, 0, 1, 0, 0, 0, 0]);
       // assert.deepStrictEqual(rasterize([4, 4, 4], { type: 1, position: [1, 1, 0] }), [0, 0, 0, 1, 0, 0, 0, 0]);

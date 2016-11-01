@@ -1,21 +1,33 @@
 import { takeEvery } from 'redux-saga';
 import { fork, take, put, select } from 'redux-saga/effects';
-import { INPUT_KEY, TIME_TICK, PIECE_RASTERIZE, pieceAdd, pieceRasterize, pieceMove } from '../actions';
+import { INPUT_KEY, TIME_TICK, PIECE_DROP, PIECE_RASTERIZE, pieceAdd, pieceRasterize, pieceMove, pieceDrop } from '../actions';
 import { rand, canMove, rasterize, shrink } from '../utils';
 
 function* moveDownByGravity() {
   while (true) {
     yield take(TIME_TICK);
     const [{ data, size }, piece] = yield select(state => [state.stage, state.piece]);
-    if (typeof piece.type !== 'undefined') {
-      if (!canMove(size, data, piece, 'down')) {
-        yield put(pieceRasterize(piece));
+    if (typeof piece.type !== 'undefined' && canMove(size, data, piece, 'down')) {
+      yield put(pieceMove('down'));
+    }
+  }
+}
+
+function* moveDownByDrop() {
+  while (true) {
+    yield take(PIECE_DROP);
+    while (true) {
+      const [{ data, size }, piece] = yield select(state => [state.stage, state.piece]);
+      if (typeof piece.type !== 'undefined' && canMove(size, data, piece, 'down')) {
+        yield put(pieceMove('down'));
+      } else {
+        break;
       }
     }
   }
 }
 
-function* moveByPlayer() {
+function* moveByKeys() {
   while (true) {
     const { payload: key } = yield take(INPUT_KEY);
     const [{ data, size }, piece] = yield select(state => [state.stage, state.piece]);
@@ -41,8 +53,11 @@ function* moveByPlayer() {
           yield put(pieceMove('left'));
         }
         break;
+      case ' ':
+        yield put(pieceDrop());
+        break;
       default:
-        console.warn(`Unhandled key: ${key}`);
+        console.warn(`Unhandled key: '${key}'`);
     }
   }
 }
@@ -57,13 +72,29 @@ function* newPiece() {
   yield put(pieceAdd({ type, position: [rand(rx), rand(ry), rz] }));
 }
 
-function* putNewPiece() {
+function* spawnNewPiece() {
   yield takeEvery(PIECE_RASTERIZE, newPiece);
+}
+
+function* triggerRasterizePiece() {
+  while (true) {
+    yield take(TIME_TICK);
+    const [{ data, size }, piece] = yield select(state => [state.stage, state.piece]);
+    if (typeof piece.type !== 'undefined') {
+      if (!canMove(size, data, piece, 'down')) {
+        yield put(pieceRasterize(piece));
+      }
+    }
+  }
 }
 
 export default function* pieceSaga() {
   yield fork(moveDownByGravity);
-  yield fork(moveByPlayer);
-  yield fork(putNewPiece);
+  yield fork(moveDownByDrop);
+  yield fork(moveByKeys);
+  yield fork(triggerRasterizePiece);
+  yield fork(spawnNewPiece);
+
+  // First piece
   yield fork(newPiece);
 }

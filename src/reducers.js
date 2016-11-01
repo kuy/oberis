@@ -55,14 +55,6 @@ const handlers = {
     [PIECE_RASTERIZE]: state => {
       return initial.piece;
     },
-    [TIME_TICK]: state => {
-      if (typeof state.type !== 'undefined') {
-        const [x, y, z] = state.position;
-        return { ...state, position: [x, y, z - 1] };
-      } else {
-        return state;
-      }
-    },
   },
 };
 

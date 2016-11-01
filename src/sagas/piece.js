@@ -52,9 +52,9 @@ function* newPiece() {
   const type = 1 + rand(5);
   const volume = rasterize(dim, { type, position: [0, 0, 0] });
   const [px, py, pz] = shrink(dim, volume);
-
   const [dx, dy, dz] = dim;
-  yield put(pieceAdd({ type, position: [rand(dx - (px - 1)), rand(dy - (py - 1)), dz - (pz - 1)] }));
+  const [rx, ry, rz] = [dx - (px - 1), dy - (py - 1), dz - (pz - 1)];
+  yield put(pieceAdd({ type, position: [rand(rx), rand(ry), rz] }));
 }
 
 function* putNewPiece() {

@@ -31,7 +31,6 @@ function* moveByKeys() {
   while (true) {
     const { payload: key } = yield take(INPUT_KEY);
     const [{ data, size }, piece] = yield select(state => [state.stage, state.piece]);
-    let action;
     switch (key) {
       case 'ArrowUp':
         if (canMove(size, data, piece, 'back')) {
@@ -55,8 +54,6 @@ function* moveByKeys() {
         break;
       case 'Enter':
         yield put(pieceDrop());
-        break;
-      case ' ': // Space key
         break;
       default:
         console.warn(`Unhandled key: '${key}'`);

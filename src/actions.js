@@ -4,11 +4,9 @@ export const SCORE = 'SCORE';
 export const score = createAction(SCORE);
 
 export const TIME_TICK = 'TIME_TICK';
-export const TIME_RESUME = 'TIME_RESUME';
-export const TIME_PAUSE = 'TIME_PAUSE';
+export const TIME_TOGGLE = 'TIME_TOGGLE';
 export const timeTick = createAction(TIME_TICK);
-export const timeResume = createAction(TIME_RESUME);
-export const timePause = createAction(TIME_PAUSE);
+export const timeToggle = createAction(TIME_TOGGLE);
 
 export const INPUT_KEY = 'INPUT_KEY';
 export const inputKey = createAction(INPUT_KEY);

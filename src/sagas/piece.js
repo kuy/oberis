@@ -53,8 +53,10 @@ function* moveByKeys() {
           yield put(pieceMove('left'));
         }
         break;
-      case ' ':
+      case 'Enter':
         yield put(pieceDrop());
+        break;
+      case ' ': // Space key
         break;
       default:
         console.warn(`Unhandled key: '${key}'`);

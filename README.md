@@ -4,14 +4,21 @@ Tetris + [Obelisk.js](https://github.com/nosir/obelisk.js) with Redux.
 
 ![Oberis Preview][oberis_img]
 
-## Usage
+## Getting Started
 
 ```
 $ npm install
 $ npm start
 ```
 
-Open `http://localhost:8080` in your browser.
+Open `http://localhost:8080` in your browser to start game.
+
+## Keyboard mapping
+
++ Move Piece: `UP` / `DOWN` / `RIGHT` / `LEFT` (cursor keys)
++ Rotate Piece: `A` (anticlockwise) / `W` (vertical) / `D` (clockwise) *[Comming Soon!]*
++ Drop Piece: `Enter` key
++ Pause/Resume: `Space` key
 
 ## Development
 

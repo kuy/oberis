@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 import {
-  SCORE, TIME_TICK,
+  GAME_OVER, SCORE, RESTART, TIME_TICK,
   PIECE_ADD, PIECE_MOVE, PIECE_ROTATE, PIECE_RASTERIZE,
 } from './actions';
 import { merge, rasterize, empty, isValid, move } from './utils';
@@ -10,6 +10,7 @@ export const initial = {
   app: {
     score: 0,
     time: 0,
+    gameOver: false,
   },
   stage: {
     size: DIMENSION,
@@ -26,6 +27,12 @@ const handlers = {
   app: {
     [SCORE]: (state, { payload }) => {
       return { ...state, score: state.score + payload };
+    },
+    [GAME_OVER]: (state, { payload }) => {
+      return { ...state, gameOver: true };
+    },
+    [RESTART]: (state, { payload }) => {
+      return { ...initial.app };
     },
     [TIME_TICK]: state => {
       return { ...state, time: state.time + 1 };
@@ -44,6 +51,9 @@ const handlers = {
       const piece = rasterize(state.size, payload);
       return { ...state, data: merge(state.data, piece) };
     },
+    [RESTART]: (state, { payload }) => {
+      return { ...state, data: empty(state.size) };
+    },
   },
   piece: {
     [PIECE_ADD]: (state, { payload }) => {
@@ -53,7 +63,10 @@ const handlers = {
       return move(state, dir);
     },
     [PIECE_RASTERIZE]: state => {
-      return initial.piece;
+      return { ...initial.piece };
+    },
+    [RESTART]: state => {
+      return { ...initial.piece };
     },
   },
 };

@@ -61,7 +61,7 @@ function* moveByKeys() {
   }
 }
 
-function* newPiece() {
+export function* newPiece() {
   const dim = yield select(state => state.stage.size);
   const type = 1 + rand(5);
   const volume = rasterize(dim, { type, position: [0, 0, 0] });

@@ -1,7 +1,11 @@
 import { createAction } from 'redux-actions';
 
 export const SCORE = 'SCORE';
+export const GAME_OVER = 'GAME_OVER';
+export const RESTART = 'RESTART';
 export const score = createAction(SCORE);
+export const gameOver = createAction(GAME_OVER);
+export const restart = createAction(RESTART);
 
 export const TIME_TICK = 'TIME_TICK';
 export const TIME_TOGGLE = 'TIME_TOGGLE';
